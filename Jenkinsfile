@@ -1,10 +1,12 @@
 pipeline{
     agent any 
     environment{
-        VERSION = "${env.BUILD_ID}"                          //holds version genrated in every build
+        //holds version genrated in every build
+        VERSION = "${env.BUILD_ID}"                          
     }
     stages{
-        stage("sonar quality check"){                       //static-code analysis
+         //static-code analysis
+        stage("sonar quality check"){                      
             agent {                             
                 docker {
                     image 'openjdk:11'
@@ -16,9 +18,9 @@ pipeline{
                             sh 'chmod +x gradlew'
                             sh './gradlew sonarqube'  
                     }
-
+                    //collected responce from sonar 
                     timeout(time: 1, unit: 'HOURS') {
-                      def qg = waitForQualityGate()                                 //collected responce from sonar 
+                      def qg = waitForQualityGate()                                 
                       if (qg.status != 'OK') {                                      
                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
                       }
@@ -39,11 +41,13 @@ pipeline{
                             '''
                             //build image named spring:@version    8083 is nexus repo - (docker-hosted)
                             //if incase username password expires
-                            //pused the created image
+                            //pushed the created image
+                            //deleted the image just to save space
                     }
                 }
             }
         }
+        //more of self explanatory, but i will comment it down with few days 
         stage('indentifying misconfigs using datree in helm charts'){
             steps{
                 script{
